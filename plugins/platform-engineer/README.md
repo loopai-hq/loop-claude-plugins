@@ -5,7 +5,7 @@ task, routes each part to the specialised skill that should do it, and keeps
 durable state so any later session resumes with a single line.
 
 ```bash
-claude plugin marketplace add LoopKitchen/loop-claude-plugins
+claude plugin marketplace add loopai-hq/loop-claude-plugins
 claude plugin install oncall@loop-plugins
 claude plugin install engg@loop-plugins
 claude plugin install platform-engineer@loop-plugins

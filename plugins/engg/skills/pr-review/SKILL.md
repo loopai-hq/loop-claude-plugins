@@ -1070,7 +1070,7 @@ PAYLOAD="$(mktemp)"
 cat > "$PAYLOAD" <<'PAYLOAD_EOF'
 {
   "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
-  "body": "---\n*Reviewed by [`/pr-review`](https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md)*",
+  "body": "---\n*Reviewed by [`/pr-review`](https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md)*",
   "comments": [
     {
       "path": "path/to/file.ts",
@@ -1139,7 +1139,7 @@ The review body must be **minimal** — just the skill attribution. No summaries
 
 ```markdown
 ---
-*Reviewed by [`/pr-review`](https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md)*
+*Reviewed by [`/pr-review`](https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md)*
 ```
 
 ---
@@ -1279,12 +1279,12 @@ This skill ships inside a plugin, so the installed copy is overwritten on every 
 **GitHub review body** (included in Phase 10 template):
 ```markdown
 ---
-*Reviewed by [`/pr-review`](https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md) — Triggers: "review PR", "review this PR", "review PR changes", "deep review", "PR review"*
+*Reviewed by [`/pr-review`](https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md) — Triggers: "review PR", "review this PR", "review PR changes", "deep review", "PR review"*
 ```
 
 **Console output** (included in Phase 12 template):
 ```
 Skill: /pr-review
 File:  ${CLAUDE_PLUGIN_ROOT}/skills/pr-review/SKILL.md
-Repo:  https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md
+Repo:  https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/engg/skills/pr-review/SKILL.md
 ```

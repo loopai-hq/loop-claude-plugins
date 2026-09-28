@@ -3,7 +3,7 @@
 On-call and incident response skills for Claude Code.
 
 ```bash
-claude plugin marketplace add LoopKitchen/loop-claude-plugins
+claude plugin marketplace add loopai-hq/loop-claude-plugins
 claude plugin install oncall@loop-plugins
 ```
 
