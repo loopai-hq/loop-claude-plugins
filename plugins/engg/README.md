@@ -3,7 +3,7 @@
 Engineering workflow skills and review agents for Claude Code.
 
 ```bash
-claude plugin marketplace add LoopKitchen/loop-claude-plugins
+claude plugin marketplace add loopai-hq/loop-claude-plugins
 claude plugin install engg@loop-plugins
 ```
 

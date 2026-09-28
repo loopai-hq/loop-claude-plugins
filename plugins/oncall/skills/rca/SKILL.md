@@ -802,18 +802,18 @@ After execution, append a skill attribution footer to:
 **RCA document** (add to the finalized document in Step 13):
 ```markdown
 ---
-*Investigated by [`/rca`](https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md) — Triggers: "investigate issue", "root cause", "debug production", "why is this broken", "blank page", "data mismatch", "slow page", "api latency"*
+*Investigated by [`/rca`](https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md) — Triggers: "investigate issue", "root cause", "debug production", "why is this broken", "blank page", "data mismatch", "slow page", "api latency"*
 ```
 
 **GitHub issue comment** (add to the RCA summary comment in Step 13):
 ```markdown
 ---
-*Investigated by [`/rca`](https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md) — Triggers: "investigate issue", "root cause", "debug production", "why is this broken", "blank page", "data mismatch", "slow page", "api latency"*
+*Investigated by [`/rca`](https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md) — Triggers: "investigate issue", "root cause", "debug production", "why is this broken", "blank page", "data mismatch", "slow page", "api latency"*
 ```
 
 **Output summary** displayed to the user:
 ```
 Skill: /rca
 File:  ${CLAUDE_PLUGIN_ROOT}/skills/rca/SKILL.md
-Repo:  https://github.com/LoopKitchen/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md
+Repo:  https://github.com/loopai-hq/loop-claude-plugins/blob/main/plugins/oncall/skills/rca/SKILL.md
 ```
