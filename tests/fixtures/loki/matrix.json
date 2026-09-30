@@ -1,0 +1,3 @@
+{"status":"success","data":{"resultType":"matrix","result":[
+ {"metric":{"service_name":"api"},"values":[[1759190400,"3"],[1759190460,"5"]]}
+]}}
