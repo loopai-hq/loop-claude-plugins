@@ -30,7 +30,7 @@ Everything here is optional. With nothing set the skill still branches, formats,
 | `LINEAR_API_KEY` | Personal Linear API key. When set, Step 2 fetches or creates the ticket, and the branch name and PR body reference it. | unset — Linear is skipped entirely |
 | `LINEAR_TEAM_ID` | UUID of the Linear team that new issues are created in (not the short team key). | unset — the skill lists your teams and asks; in autonomous mode it skips ticket creation |
 | `GITHUB_REPO` | `owner/name` of the repository, used for the review-thread API calls in Step 6. | detected with `gh repo view --json nameWithOwner -q .nameWithOwner` |
-| `.claude/git-labels.json` (repo root), else `${CLAUDE_PLUGIN_ROOT}/skills/git/labels.json` | Path-prefix to PR-label map for Step 7 (deployment labels). Copy `${CLAUDE_PLUGIN_ROOT}/skills/git/labels.example.json` and edit. | absent — Step 7 is skipped |
+| `.claude/git-labels.json` (repo root), else `${CLAUDE_PLUGIN_DATA}/labels.json` | Path-prefix to PR-label map for Step 7 (deployment labels). Copy `${CLAUDE_PLUGIN_ROOT}/skills/git/labels.example.json` and edit; `${CLAUDE_PLUGIN_DATA}` is a per-plugin directory Claude Code keeps across updates (never write under `${CLAUDE_PLUGIN_ROOT}`, which updates replace). | absent — Step 7 is skipped |
 
 The repo's own `CLAUDE.md` / `CLAUDE.local.md` may additionally name default PR reviewers (Step 5, item 5).
 
@@ -220,7 +220,7 @@ Resolve `{owner}` and `{repo}` first: split `GITHUB_REPO` on `/` if it is set, o
 
 Some repos deploy on merge based on PR labels (for example a workflow that reads `service:*` labels). This step applies them from a path-prefix map and is **skipped unless a map exists**.
 
-1. **Find the label map**: check `.claude/git-labels.json` at the repo root, then `${CLAUDE_PLUGIN_ROOT}/skills/git/labels.json`. If neither exists, print `Labels: no label map configured (copy labels.example.json to .claude/git-labels.json to enable)` and go to Step 8.
+1. **Find the label map**: check `.claude/git-labels.json` at the repo root, then `${CLAUDE_PLUGIN_DATA}/labels.json`. If neither exists, print `Labels: no label map configured (copy labels.example.json to .claude/git-labels.json to enable)` and go to Step 8.
 
 2. **Read the map** with the `Read` tool. It has three keys (see `labels.example.json`):
    - `services`: rows of `{ "prefix": "<directory/>", "label": "<label>" }` — `label` may be an array when one directory deploys several services

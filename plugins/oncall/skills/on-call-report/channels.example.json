@@ -11,8 +11,8 @@
   "tiers": [
     {
       "tier": 0,
-      "name": "CTO Always-Monitor",
-      "scan": "every run, first; summarized separately as the CTO Pulse section",
+      "name": "Always-Monitor",
+      "scan": "every run, first; summarized separately as the Your Pulse section",
       "channels": [
         { "name": "#triage", "id": "C0EXMPL01", "signal": "Cross-team issue triage, prioritization decisions", "category": "All", "role": "triage" },
         { "name": "#eng-frontend", "id": "C0EXMPL02", "signal": "Frontend team discussion, blockers, decisions", "category": "Frontend", "role": "team" },
