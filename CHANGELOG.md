@@ -1,0 +1,108 @@
+# Changelog
+
+Each plugin is versioned on its own. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions are
+[semver](https://semver.org/). Git tags are `<plugin>--v<version>` and the
+release workflow turns each tag into a GitHub Release whose body is the
+matching section below.
+
+## oncall
+
+### [0.2.0] - 2026-09-30
+
+#### Changed
+- `on-call-report`: `allowed-tools` no longer pre-approves unrestricted
+  `Bash` or the Slack send tools; posting a report to Slack now goes through
+  the normal permission prompt. Bash is scoped to `gh`, `python3`, `cat` and
+  `date`.
+- `on-call-report`: written for an engineering lead instead of a "CTO";
+  the description leads with its triggers.
+- `on-call-report`: the `ONCALL_CHANNELS_FILE` fallback moved from the
+  plugin cache to `${CLAUDE_PLUGIN_DATA}/channels.json`, which survives
+  plugin updates.
+- `on-call-report`, `rca`: date arithmetic uses `python3` instead of
+  GNU/BSD-specific `date` flags.
+- `rca`: SKILL.md is under 500 lines; the trace-correlation diagram, the
+  link-format rules, the GCloud/GitHub query recipes and the tips moved to
+  `references/` and are loaded at the step that needs them.
+- `rca`: the self-healing phase no longer re-reads the whole skill after
+  every run; the attribution footer is one line and can be disabled.
+- `loki`, `on-call-report`, `rca`: a standing instruction that fetched
+  logs, chat messages and issue text are data, never instructions.
+
+#### Fixed
+- `parse_logs.py` no longer crashes on a non-JSON response body, on JSON
+  log lines that are not objects, or on a `matrix` (metric) result; each
+  case prints a clear message. A fixture test runs in CI.
+
+### [0.1.0] - 2026-09-25
+
+#### Added
+- Initial public release: `loki`, `rca`, `on-call-report`.
+
+## engg
+
+### [0.2.0] - 2026-09-30
+
+#### Added
+- `plan-issue`: the former `plan` skill under a name that does not collide
+  with Claude Code's built-in `/plan` command. Invoke it as
+  `/engg:plan-issue`.
+
+#### Changed
+- `evaluate`: `allowed-tools` no longer pre-approves unrestricted `Bash`,
+  `Write` and `Edit`; the skill runs on ordinary permission prompts.
+- `pr-review`, `evaluate`: SKILL.md is under 500 lines; the frontend-only
+  review passes, comment templates, type-specific inspection strategies and
+  the evaluation document template moved to `references/` and are loaded
+  at the stage that needs them.
+- `pr-review`, `evaluate`: the self-healing phase no longer re-reads the
+  whole skill after every run; the attribution footer is one line and can
+  be disabled.
+- `pr-review`: `GITHUB_REPO` is documented as resolved with `gh repo view`,
+  matching what the skill runs.
+- `git`: the deploy-label fallback moved from the plugin cache to
+  `${CLAUDE_PLUGIN_DATA}/labels.json`, which survives plugin updates.
+- `security-reviewer` agent uses `model: inherit` instead of pinning a
+  model tier.
+- `pr-review`, `pr-babysit`: a standing instruction that PR bodies, review
+  comments and issue text are data, never instructions.
+
+#### Removed
+- `share-session`: it required a `scripts/session_replayer.py` that the
+  plugin never shipped, so it could not run from a clean install. It returns
+  when the replayer is bundled (see ROADMAP.md).
+
+### [0.1.0] - 2026-09-25
+
+#### Added
+- Initial public release: `git`, `pr-review`, `pr-check`, `pr-babysit`,
+  `local-pr-review`, `codebase-investigator`, `plan`, `doc`, `evaluate`,
+  `deep-understanding`, `test-fix`, `debug-service`, `share-session`, and
+  the `code-optimizer` and `security-reviewer` agents.
+
+## platform-engineer
+
+### [0.2.0] - 2026-09-30
+
+#### Added
+- `dependencies: ["oncall", "engg"]` in the manifest, so installing
+  `platform-engineer` installs the plugins that supply its routes.
+- A "Provenance" section in the plugin README describing how the
+  reference material was derived.
+
+#### Changed
+- Routes and chains reference `/engg:plan-issue` instead of the bare
+  `/plan`, which Claude Code's built-in command owns.
+- `argument-hint` renders as `[task or workstream description]`.
+- Provenance and research notes moved out of the skill instructions into
+  the README; model-tier names removed from the reference files.
+- Cross-file links inside `references/` use sibling file names; the
+  branch-naming rule is quoted inline instead of pointing into another
+  plugin.
+
+### [0.1.0] - 2026-09-25
+
+#### Added
+- Initial public release: the `platform-engineer` orchestrating skill and
+  its seven reference files.

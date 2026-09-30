@@ -1,0 +1,85 @@
+name: Bug report
+description: A skill, agent, script or document in this marketplace does not do what it says.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please replace every real identifier (project ids, channel ids, hostnames, tokens, names) with a placeholder before submitting; this is a public repository.
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      options:
+        - oncall
+        - engg
+        - platform-engineer
+        - marketplace / repository (CI, docs, scripts)
+    validations:
+      required: true
+  - type: input
+    id: component
+    attributes:
+      label: Skill or agent
+      description: The directory name, e.g. `loki`, `pr-review`, `security-reviewer`.
+      placeholder: loki
+  - type: input
+    id: invocation
+    attributes:
+      label: Exact invocation
+      placeholder: /oncall:loki api ERROR 6h
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Paste the relevant output. Redact identifiers.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: claude-version
+    attributes:
+      label: Claude Code version
+      description: Output of `claude --version`.
+      placeholder: 2.1.285 (Claude Code)
+    validations:
+      required: true
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: From `claude plugin list`.
+      placeholder: oncall 0.2.0
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and shell
+      placeholder: macOS 15 / zsh
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration variables set (values redacted)
+      placeholder: |
+        SENTRY_ORG=<redacted>
+        LOKI_URL=<redacted>
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I removed every real identifier, token and internal hostname from this report.
+          required: true
+        - label: I searched existing issues for the same problem.
+          required: true
