@@ -41,10 +41,12 @@ raw_hits() {
   # Plain grep rather than git grep on purpose: it behaves the same on a CI
   # checkout, also covers untracked files in a local run, and cannot be fooled
   # by an exported tree that happens to sit inside some other git work tree.
+  # --exclude=.git as well as --exclude-dir=.git: in a linked git worktree
+  # .git is a one-line pointer file, never tracked content.
   if [ "$#" -gt 0 ]; then
-    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude-dir=examples --exclude=LICENSE "$@"
+    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude=.git --exclude-dir=examples --exclude=LICENSE "$@"
   else
-    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude-dir=examples --exclude=LICENSE .
+    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude=.git --exclude-dir=examples --exclude=LICENSE .
   fi
 }
 

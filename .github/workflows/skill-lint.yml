@@ -1,5 +1,12 @@
 name: skill-lint
 
+# Static and behavioural checks for the marketplace. Every job runs on a
+# shallow checkout except the two that need history (gitleaks scans commits;
+# version-bump compares against the pull request's base). The validate and
+# install jobs use the official Claude Code CLI, pinned to the version the
+# README says the plugins are tested with; validation and headless install
+# need no login.
+
 on:
   pull_request:
   push:
@@ -9,40 +16,190 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CLAUDE_CODE_VERSION: 2.1.285
+
 jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Every JSON file parses
+        run: |
+          set -euo pipefail
+          while IFS= read -r f; do
+            python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$f" \
+              || { echo "::error file=$f::not valid JSON"; exit 1; }
+            echo "ok  $f"
+          done < <(git ls-files '*.json')
+
+      - name: Marketplace entries agree with plugin manifests
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, sys
+          m = json.load(open('.claude-plugin/marketplace.json'))
+          bad = 0
+          for e in m['plugins']:
+              src = os.path.normpath(e['source'])
+              p = json.load(open(os.path.join(src, '.claude-plugin', 'plugin.json')))
+              for cond, msg in [
+                  (e['name'] != p['name'], f"entry name {e['name']!r} != manifest name {p['name']!r}"),
+                  ('version' in e, f"{e['name']}: version belongs in plugin.json only"),
+                  (not e.get('category'), f"{e['name']}: entry has no category"),
+                  (not e.get('tags'), f"{e['name']}: entry has no tags"),
+                  (not p.get('version'), f"{p['name']}: manifest has no version"),
+                  (p['name'] not in m['description'], f"marketplace description does not name {p['name']}"),
+              ]:
+                  if cond:
+                      print(f"::error::{msg}"); bad = 1
+              for dep in p.get('dependencies', []):
+                  name = dep if isinstance(dep, str) else dep['name']
+                  if name not in [x['name'] for x in m['plugins']]:
+                      print(f"::error::{p['name']} depends on {name}, which is not in this marketplace"); bad = 1
+              print(f"ok  {p['name']} {p['version']}")
+          sys.exit(bad)
+          PY
+
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Validate plugin manifests
-        run: |
-          for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json; do
-            python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$f" \
-              || { echo "::error::$f is not valid JSON"; exit 1; }
-            echo "ok  $f"
-          done
-
-      - name: Compute changed plugin files
-        if: github.event_name == 'pull_request'
-        run: |
-          git fetch origin "${{ github.base_ref }}" --depth=1
-          git diff --name-only --diff-filter=ACMR \
-            "origin/${{ github.base_ref }}...HEAD" -- plugins > changed.txt
-          echo "Changed plugin files:"
-          cat changed.txt
-
-      - name: Lint changed skills
-        if: github.event_name == 'pull_request'
-        run: |
-          if [ ! -s changed.txt ]; then
-            echo "No plugin files changed."
-            exit 0
-          fi
-          bash .github/scripts/skill-lint.sh $(cat changed.txt)
-
-      - name: Lint every skill
-        if: github.event_name != 'pull_request'
+      - name: skill-lint (every file under plugins/ plus the parse_logs fixture tests)
         run: bash .github/scripts/skill-lint.sh
+
+      - name: shellcheck the repository scripts
+        run: shellcheck .github/scripts/*.sh
+
+      - name: actionlint the workflows
+        run: |
+          set -euo pipefail
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          "$(go env GOPATH)/bin/actionlint" -color
+
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Install the Claude Code CLI (pinned)
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" && claude --version
+
+      - name: claude plugin validate --strict (marketplace, each plugin, each skills/ and agents/ dir)
+        env:
+          HOME: ${{ runner.temp }}/home
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME"
+          claude plugin validate . --strict
+          for p in plugins/*; do
+            claude plugin validate "$p" --strict
+            claude plugin validate "$p/skills" --strict
+            if [ -d "$p/agents" ]; then
+              claude plugin validate "$p/agents" --strict
+            fi
+          done
+          echo "validate: OK"
+
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Install the Claude Code CLI (pinned)
+        run: npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" && claude --version
+
+      - name: Headless clean install of every plugin, then assert the component inventory
+        env:
+          HOME: ${{ runner.temp }}/home
+          CLAUDE_CODE_PLUGIN_CACHE_DIR: ${{ runner.temp }}/seed
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME"
+          claude plugin marketplace add ./
+          claude plugin install platform-engineer@loop-plugins   # must pull oncall and engg via dependencies
+          for p in oncall engg platform-engineer; do
+            claude plugin details "$p" | tee "$RUNNER_TEMP/details-$p.txt"
+            grep -q "^$p " "$RUNNER_TEMP/details-$p.txt" || { echo "::error::$p is not installed after installing platform-engineer"; exit 1; }
+          done
+          grep -qE 'Skills \(3\).*loki.*on-call-report.*rca' "$RUNNER_TEMP/details-oncall.txt"
+          grep -qE 'Skills \(12\).*plan-issue' "$RUNNER_TEMP/details-engg.txt"
+          if grep -q 'share-session' "$RUNNER_TEMP/details-engg.txt"; then echo "::error::share-session must not ship in engg"; exit 1; fi
+          grep -qE 'Agents \(2\).*code-optimizer.*security-reviewer' "$RUNNER_TEMP/details-engg.txt"
+          grep -qE 'Skills \(1\).*platform-engineer' "$RUNNER_TEMP/details-platform-engineer.txt"
+          echo "install: OK"
+
+  refs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Bundled paths, relative links, README tables and Configuration sections
+        run: bash .github/scripts/check-refs.sh
+
+  version-bump:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Fetch the pull request's base commit (one commit, no history)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git fetch --no-tags --depth=1 origin "$BASE_SHA"
+
+      - name: A change under plugins/<p>/ must bump that plugin's version
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bash .github/scripts/version-bump-check.sh "$BASE_SHA"
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0   # gitleaks git scans every commit
+
+      - name: Install gitleaks (pinned, verified by the Go module checksum database)
+        run: go install github.com/zricethezav/gitleaks/v8@v8.30.1
+
+      - name: gitleaks git (history) and dir (working tree)
+        run: |
+          set -euo pipefail
+          GL="$(go env GOPATH)/bin/gitleaks"
+          "$GL" git . --no-banner --redact --exit-code 1
+          "$GL" dir . --no-banner --redact --exit-code 1

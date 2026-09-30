@@ -1,0 +1,66 @@
+name: release
+
+# Turns a plugin tag into a GitHub Release. Tags are `<plugin>--v<version>`,
+# the shape `claude plugin tag --push` creates; the release body is that
+# plugin's section for that version from CHANGELOG.md. Nothing is built: the
+# plugins are installed from the git tree, so the release is a changelog and
+# a permanent pointer to the tagged commit.
+
+on:
+  push:
+    tags:
+      - '*--v*'
+
+permissions: {}
+
+jobs:
+  release:
+    if: github.repository_owner == 'loopai-hq'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # gh release create
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Parse the tag and check it against the manifest
+        id: tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          plugin="${TAG%%--v*}"
+          version="${TAG##*--v}"
+          manifest="plugins/$plugin/.claude-plugin/plugin.json"
+          [ -f "$manifest" ] || { echo "::error::no plugin '$plugin' for tag $TAG"; exit 1; }
+          manifest_version=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$manifest")
+          [ "$manifest_version" = "$version" ] || { echo "::error::tag says $version but $manifest says $manifest_version"; exit 1; }
+          { echo "plugin=$plugin"; echo "version=$version"; } >> "$GITHUB_OUTPUT"
+
+      - name: Extract the CHANGELOG section
+        env:
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          {
+            echo "Install or update:"
+            echo
+            echo '```bash'
+            echo "claude plugin marketplace add loopai-hq/loop-claude-plugins"
+            echo "claude plugin install ${PLUGIN}@loop-plugins   # or: claude plugin update ${PLUGIN}@loop-plugins"
+            echo '```'
+            echo
+            bash .github/scripts/changelog-section.sh "$PLUGIN" "$VERSION"
+          } > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md"
+
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PLUGIN: ${{ steps.tag.outputs.plugin }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: gh release create "$TAG" --verify-tag --title "$PLUGIN $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
