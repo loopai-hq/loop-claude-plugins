@@ -1,7 +1,7 @@
 {
   "name": "oncall",
   "description": "On-call and incident response skills: Grafana Loki log queries (loki), structured root cause analysis across Sentry, PostHog, cloud logs and GitHub (rca), and an on-call health report that scans Slack, Sentry, GitHub and PostHog (on-call-report)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Loop AI"
   },

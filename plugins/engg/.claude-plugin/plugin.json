@@ -1,7 +1,7 @@
 {
   "name": "engg",
-  "description": "Engineering workflow skills: git branch/commit/PR in one command, PR review and PR babysitting, codebase investigation, implementation plans and design docs as GitHub issues, go/no-go evaluations, test fixing, local service debugging, session sharing, plus code-optimizer and security-reviewer agents",
-  "version": "0.1.0",
+  "description": "Engineering workflow skills: git branch/commit/PR in one command, PR review and PR babysitting, codebase investigation, implementation plans and design docs as GitHub issues, go/no-go evaluations, test fixing, local service debugging, plus code-optimizer and security-reviewer agents",
+  "version": "0.2.0",
   "author": {
     "name": "Loop AI"
   },
