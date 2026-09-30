@@ -1,29 +1,25 @@
 # Execution mechanics — Steps H-M (continues orchestration-playbook.md A-F; G reserved for routing, owned by SKILL.md)
 
-> The spine is `references/execution-engine.md` — read it first. This file is
+> The spine is `execution-engine.md` (next to this file) — read it first. This file is
 > its rulebook: consult per engine stage via the stage map, not linearly.
 
-Mined from six evidence streams: behavior digests of 6 mined Fable sessions
-(~8,700 assistant messages from a shared CLI/desktop transcript store,
-including a 3-day 50-PR marathon; a 7th digest captured unmined), an
-Opus control session on the same harness, a corpus of 58 outcome-labeled
-sessions, targeted web research, a first-person session introspection, and a
-model-router assessment. Same tagging as the playbook: [INV] any model, [COMP] compensation
-(skip only with journaled justification). Measurement notes: parallel-call
-rates below are replay-safe (deduped by tool_use id within message.id);
-digest-level counts without that dedup are unreliable.
+Same tagging as the playbook: [INV] any model, [COMP] compensation (skip only
+with journaled justification). The rules were derived from real sessions,
+including one multi-day, many-PR run referred to below as "the marathon"; the
+sources and measurement method are described in the plugin README under
+"Provenance", and the figures quoted in parentheses are from that material.
 
 **[INV] Artifact over citation.** A rule is satisfied by its ARTIFACT (the
 watchers entry, the recorded tick+timeout, the gate command inside the armed
 chain, the journal line), never by citing its id. Controlled validation
-(5 scenarios, Opus executor) showed the dominant residual failure is
+(5 scenarios, frontier-class executor) showed the dominant residual failure is
 name-dropping a rule while omitting its artifact. Self-checks and reviewers
 grep for the artifact, not the citation.
 
 ## Step H — Turn mechanics and context economy
 
 1. [INV] Three concurrency mechanisms, chosen by dependency structure — none is
-   "the" mechanism (measured: multi-call rates 3-31% across Fable sessions by
+   "the" mechanism (measured: multi-call rates 3-31% across sessions by
    workload; compound Bash 38% of calls in the marathon):
    - Independent calls needing different tools → one message, multiple tool
      calls (`Read` + `Read`, `Edit` + `Bash` on unrelated files).
@@ -157,8 +153,8 @@ grep for the artifact, not the citation.
      shape) and pause until reset per I.9; the workflow's completed workers
      replay FREE from cache on resume (J.6 gap-fill), so the dead workers plus
      the gate re-run and nothing already-finished repeats. A sanctioned model
-     fallback within the SAME account (a product feature, e.g. an opus-limit
-     falling back to sonnet) clears a MODEL-specific limit and is allowed:
+     fallback within the SAME account (a product feature, e.g. a per-model
+     usage limit falling back to a smaller tier) clears a MODEL-specific limit and is allowed:
      journal the switch like any model choice; it is a limit-triggered fallback,
      not a B.1 cost-downgrade. This is distinct from switching identity/account/
      credentials to evade a limit, which I.9 forbids absolutely; do not weaken

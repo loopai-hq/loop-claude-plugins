@@ -148,7 +148,7 @@ the PR body alongside the size math (base size, median, added, trimmed).
 
 ## Self-protection clause (flat prohibition)
 
-No auto-augment PR may modify `references/self-augmentation.md`, any SKILL.md
+No auto-augment PR may modify this file (`self-augmentation.md`), any SKILL.md
 line that references auto-augment or human-gated merging (including the DoD
 hook and its human-gated parenthetical), the config file, or the ledger
 semantics — for ANY reason, including claimed strengthening or clarification —

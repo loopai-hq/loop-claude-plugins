@@ -8,7 +8,7 @@ stage, evidence-backed and unchanged. When this file and a rulebook rule seem
 to conflict, the engine's principle states the WHY; the rule states the HOW;
 follow the rule and journal the tension.
 
-Validated: on Opus executors, doctrine roughly doubles scenario conformance
+Validated: on frontier-class executors, doctrine roughly doubles scenario conformance
 (3-6/10 → 8-9/10); the dominant residual failure is citing a rule without
 producing its artifact. Hence the engine's one meta-law: **a principle is held
 by its artifact, never by its mention.** The spine never substitutes for the
@@ -21,7 +21,7 @@ disk state, not the whole.
 | Artifact | Rule | Written where |
 |---|---|---|
 | Capability inventory | A.1-A.2 | `state.json.capabilities` |
-| Effort/model journal line (xhigh floor on Opus-class) | B.1 | `<ws>/journal.md` |
+| Effort/model journal line (xhigh floor on frontier-class) | B.1 | `<ws>/journal.md` |
 | Cost receipt file opened | M.4 | `<ws>/costs.jsonl` |
 | Baseline failure ledger (whenever code will change) | K.1 | `<ws>/baseline.md` |
 | Tier classification | ladder below | `state.json.tier` |
@@ -105,8 +105,8 @@ never downgrade to avoid ceremony.
    task text via whichever recall surface the probe FOUND (a recall skill, a
    local search CLI, a wiki query) — hits skimmed into the pin:
    prior decisions and incident recipes are cheaper than rediscovery, and
-   with recall left optional a heavily-funded capture pipeline measured 2
-   recalls across 1,975 transcripts. Absent → skip silently. For tier A,
+   left optional the pass is almost never run (README, "Provenance").
+   Absent → skip silently. For tier A,
    build the ambiguity register before anything else; the first components
    ARE its probes.
 2. **DECOMPOSE** (P3): components at review grain. Each ledger entry is born
