@@ -293,11 +293,11 @@ What you are installing, and how to check it yourself:
   there is no telemetry and no default endpoint. The optional one-line
   attribution footer in RCA documents, evaluations and PR reviews links to
   this repository and is turned off with `PLUGIN_FOOTER=off`.
-- **Token cost** (from `claude plugin details`, CLI 2.1.285, version 0.2.0;
+- **Token cost** (from `claude plugin details`, CLI 2.1.287, version 0.2.0;
   always-on is added to every session, on-invoke each time the skill fires):
-  `oncall` ~430 always-on, `loki` ~3.4k / `on-call-report` ~8.4k / `rca`
-  ~10.1k on-invoke; `engg` ~1.5k always-on, `git` ~5.7k / `pr-review` ~12.1k /
-  `evaluate` ~7.3k on-invoke (the rest 200-3.5k); `platform-engineer` ~270
+  `oncall` ~430 always-on, `loki` ~3.5k / `on-call-report` ~8.6k / `rca`
+  ~10.4k on-invoke; `engg` ~1.5k always-on, `git` ~6k / `pr-review` ~12.3k /
+  `evaluate` ~7.4k on-invoke (the rest 200-3.5k); `platform-engineer` ~270
   always-on, ~5.7k on-invoke, plus the reference files it reads per stage.
 - **Reporting.** See [SECURITY.md](SECURITY.md): GitHub private vulnerability
   reporting first, `security@loopai.com` as the fallback.
