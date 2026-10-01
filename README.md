@@ -1,4 +1,4 @@
-# loop-claude-plugins
+# loop-plugins
 
 Public [Claude Code](https://code.claude.com/docs/en/plugins) plugins from
 Loop AI. These are the skills our engineers run every day, published with our
@@ -28,7 +28,7 @@ endorsed by Anthropic.
 ## Install
 
 ```bash
-claude plugin marketplace add loopai-hq/loop-claude-plugins
+claude plugin marketplace add loopai-hq/loop-plugins
 claude plugin install platform-engineer@loop-plugins   # declares oncall and engg as dependencies, so all three install
 ```
 
@@ -130,7 +130,7 @@ the top listing exactly the variables it reads; the table below is the union.
 | `COMPANY_NAME` | no | `GITHUB_ORG` | Name printed in report titles and document headings | `on-call-report` |
 | `LINEAR_API_KEY` | no | none | Linear personal API key. When unset, `git` skips ticket creation and lookup entirely | `git` |
 | `LINEAR_TEAM_ID` | no | none | Linear team id (UUID) used when creating tickets | `git` |
-| `PLUGIN_FOOTER` | no | unset (footer on) | Set to `off` to omit the one-line "with the `<skill>` skill from loop-claude-plugins" footer from RCA documents, evaluation documents and PR review bodies | `rca`, `pr-review`, `evaluate` |
+| `PLUGIN_FOOTER` | no | unset (footer on) | Set to `off` to omit the one-line "with the `<skill>` skill from loop-plugins" footer from RCA documents, evaluation documents and PR review bodies | `rca`, `pr-review`, `evaluate` |
 
 Linear is optional throughout. Nothing else in these plugins depends on it.
 `platform-engineer` reads no environment variables of its own.

@@ -5,8 +5,8 @@
   "author": {
     "name": "Loop AI"
   },
-  "homepage": "https://github.com/loopai-hq/loop-claude-plugins",
-  "repository": "https://github.com/loopai-hq/loop-claude-plugins",
+  "homepage": "https://github.com/loopai-hq/loop-plugins",
+  "repository": "https://github.com/loopai-hq/loop-plugins",
   "license": "MIT",
   "keywords": [
     "claude-code",

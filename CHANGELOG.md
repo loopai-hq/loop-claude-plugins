@@ -6,6 +6,10 @@ Each plugin is versioned on its own. The format follows
 release workflow turns each tag into a GitHub Release whose body is the
 matching section below.
 
+Repository: renamed from `loop-claude-plugins` to `loop-plugins` on
+2026-10-01 to match the marketplace name; install lines, manifests and links
+follow, and the old URLs redirect.
+
 ## oncall
 
 ### [0.2.0] - 2026-09-30

@@ -408,7 +408,7 @@ PAYLOAD="$(mktemp)"
 cat > "$PAYLOAD" <<'PAYLOAD_EOF'
 {
   "event": "<APPROVE|REQUEST_CHANGES|COMMENT>",
-  "body": "*Reviewed with the `pr-review` skill from [loop-claude-plugins](https://github.com/loopai-hq/loop-claude-plugins).*",
+  "body": "*Reviewed with the `pr-review` skill from [loop-plugins](https://github.com/loopai-hq/loop-plugins).*",
   "comments": [
     {
       "path": "path/to/file.ts",
@@ -438,7 +438,7 @@ Each line comment must be self-contained: what the surrounding code does, how th
 The review body is minimal: no summaries, no tables, no pipeline reports. The line comments ARE the review. Unless `PLUGIN_FOOTER=off`, the body is the one-line attribution below (it is also what Phase 1.5 searches for); with `PLUGIN_FOOTER=off`, use `Reviewed by /pr-review` as the body so re-review detection still works.
 
 ```markdown
-*Reviewed with the `pr-review` skill from [loop-claude-plugins](https://github.com/loopai-hq/loop-claude-plugins).*
+*Reviewed with the `pr-review` skill from [loop-plugins](https://github.com/loopai-hq/loop-plugins).*
 ```
 
 ---

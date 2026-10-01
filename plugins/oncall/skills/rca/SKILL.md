@@ -435,7 +435,7 @@ Use the `gh` CLI:
 Unless `PLUGIN_FOOTER=off`, append one line to the finalized RCA document and to the RCA summary comment on the issue:
 
 ```markdown
-*Investigated with the `rca` skill from [loop-claude-plugins](https://github.com/loopai-hq/loop-claude-plugins).*
+*Investigated with the `rca` skill from [loop-plugins](https://github.com/loopai-hq/loop-plugins).*
 ```
 
 Set `PLUGIN_FOOTER=off` in the environment to disable it. Never append a trigger list or a per-run log to user documents.

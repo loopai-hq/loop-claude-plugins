@@ -5,7 +5,7 @@
 Please do not open a public issue for security problems.
 
 1. **Preferred:** use GitHub private vulnerability reporting for this
-   repository: <https://github.com/loopai-hq/loop-claude-plugins/security/advisories/new>.
+   repository: <https://github.com/loopai-hq/loop-plugins/security/advisories/new>.
    This keeps the report private between you and the maintainers until a fix
    is published.
 2. **Fallback:** email <security@loopai.com>. Include the affected file, the

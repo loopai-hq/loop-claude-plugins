@@ -49,7 +49,7 @@ jobs:
             echo "Install or update:"
             echo
             echo '```bash'
-            echo "claude plugin marketplace add loopai-hq/loop-claude-plugins"
+            echo "claude plugin marketplace add loopai-hq/loop-plugins"
             echo "claude plugin install ${PLUGIN}@loop-plugins   # or: claude plugin update ${PLUGIN}@loop-plugins"
             echo '```'
             echo

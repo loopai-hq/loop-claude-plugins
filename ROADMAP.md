@@ -45,9 +45,6 @@ the end so the question is not reopened every quarter.
   CHANGELOG section (today only the version bump is enforced).
 
 ### Decisions for the maintainers
-- Repository name: the marketplace is `loop-plugins`; the repository is
-  `loop-claude-plugins`. Renaming the repository to match would touch every
-  install line and badge; the marketplace name cannot change.
 - Canonical contact domain (`tryloop.ai` in `marketplace.json` vs
   `loopai.com` in `SECURITY.md`).
 

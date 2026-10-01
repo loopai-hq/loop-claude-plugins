@@ -178,7 +178,7 @@ path:  docs/evaluations/evaluate-<slug>.md (Markdown)
 - <Link to codebase files>
 
 ---
-*Evaluated with the `evaluate` skill from [loop-claude-plugins](https://github.com/loopai-hq/loop-claude-plugins).* (omit this line when `PLUGIN_FOOTER=off`)
+*Evaluated with the `evaluate` skill from [loop-plugins](https://github.com/loopai-hq/loop-plugins).* (omit this line when `PLUGIN_FOOTER=off`)
 ````
 
 ## Console summary (Phase 9.1)

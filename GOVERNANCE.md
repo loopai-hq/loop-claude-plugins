@@ -1,6 +1,6 @@
 # Governance
 
-`loop-claude-plugins` is a single-vendor open-source project: the plugins are
+`loop-plugins` is a single-vendor open-source project: the plugins are
 written and maintained by Loop AI engineers and published under the MIT
 license. This file says who decides what, so that contributors know what to
 expect.

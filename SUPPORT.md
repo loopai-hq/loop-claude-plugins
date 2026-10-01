@@ -4,9 +4,9 @@
 
 | I want to... | Go to |
 |---|---|
-| Report a skill that misbehaves, a broken command or a wrong doc | [Bug report](https://github.com/loopai-hq/loop-claude-plugins/issues/new?template=bug_report.yml) |
-| Propose a new skill or a change to an existing one | [Skill request](https://github.com/loopai-hq/loop-claude-plugins/issues/new?template=skill_request.yml) |
-| Ask a usage question | A [bug report](https://github.com/loopai-hq/loop-claude-plugins/issues/new?template=bug_report.yml) with the "question" label until GitHub Discussions are enabled for this repository |
+| Report a skill that misbehaves, a broken command or a wrong doc | [Bug report](https://github.com/loopai-hq/loop-plugins/issues/new?template=bug_report.yml) |
+| Propose a new skill or a change to an existing one | [Skill request](https://github.com/loopai-hq/loop-plugins/issues/new?template=skill_request.yml) |
+| Ask a usage question | A [bug report](https://github.com/loopai-hq/loop-plugins/issues/new?template=bug_report.yml) with the "question" label until GitHub Discussions are enabled for this repository |
 | Report a security problem | [SECURITY.md](SECURITY.md): private vulnerability reporting first, `security@loopai.com` as the fallback. Never a public issue. |
 | Ask about Claude Code itself (install, login, plugin system) | Anthropic's [Claude Code documentation](https://code.claude.com/docs). This project is not affiliated with or endorsed by Anthropic and cannot answer for the product. |
 
