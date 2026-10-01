@@ -4,8 +4,8 @@ name: skill-lint
 # shallow checkout except the two that need history (gitleaks scans commits;
 # version-bump compares against the pull request's base). The validate and
 # install jobs use the official Claude Code CLI, pinned to the version the
-# README says the plugins are tested with; validation and headless install
-# need no login.
+# README says the plugins are validated and installed with; validation and
+# headless install need no login, and no skill is invoked here.
 
 on:
   pull_request:

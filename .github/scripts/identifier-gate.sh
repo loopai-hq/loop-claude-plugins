@@ -27,7 +27,7 @@ set -uo pipefail
 # own patterns when the gate is run over the repository.
 DEFAULT_PATTERNS='(^|[^A-Za-z0-9])(C0|U0|S0|G0)[A-Z0-9]{8,}([^A-Za-z0-9]|$)|/[U]sers/[a-z]|/home/[a-z]|\.nip\.io|\.sslip\.io|[a-z0-9-]+\.sentry\.io|(^|[^a-z0-9-])[a-z]+(-[a-z]+)+-[0-9]{6}([^0-9]|$)|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}'
 
-ALLOWED='engineering@tryloop\.ai|security@loopai\.com|github\.com/loopai-hq/(loop-sessions|loop-plugins)|(@|github\.com/)[b]havathi-loop|(@|github\.com/)[s]undar-loop|[A-Za-z0-9._%+-]+@example\.(com|org|net)|[A-Za-z0-9._%+-]+@users\.noreply\.github\.com|noreply@[A-Za-z0-9.-]+|(us|de)\.sentry\.io'
+ALLOWED='engineering@tryloop\.ai|security@loopai\.com|github\.com/loopai-hq/(loop-sessions|loop-plugins)|(@|github\.com/)[b]havathi-loop|[A-Za-z0-9._%+-]+@example\.(com|org|net)|[A-Za-z0-9._%+-]+@users\.noreply\.github\.com|noreply@[A-Za-z0-9.-]+|(us|de)\.sentry\.io'
 
 if [ -n "${IDENTIFIER_GATE_PATTERNS:-}" ]; then
   PATTERNS="${IDENTIFIER_GATE_PATTERNS}|${DEFAULT_PATTERNS}"
