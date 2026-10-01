@@ -1,0 +1,7 @@
+{"status":"success","data":{"resultType":"streams","result":[
+ {"stream":{"service_name":"api","severity":"ERROR"},"values":[
+   ["1759190400000000000","{\"message\":\"upstream timeout\",\"sourceLocation\":{\"file\":\"handler.go\",\"line\":\"42\"}}"],
+   ["1759190300000000000","plain text line without json"]]},
+ {"stream":{"service_name":"worker"},"values":[
+   ["1759190500000000000","{\"msg\":\"job failed\",\"jobId\":\"j-1\"}"]]}
+]}}

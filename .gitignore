@@ -1,9 +1,9 @@
-# Filled-in copies of the shipped *.example.* templates carry real channel ids,
-# alert ids, service names and label maps. They must never be committed here.
-plugins/oncall/skills/on-call-report/channels.json
-plugins/engg/skills/git/labels.json
+# Filled-in copies of the shipped *.example.* templates (channels.json,
+# labels.json, routing-table.md, alerts.md) carry real channel ids, alert ids,
+# service names and label maps. They live in your own repository or under
+# ${CLAUDE_PLUGIN_DATA}, never in this tree, so nothing here needs ignoring.
 
-# Byproducts of skill-lint's py_compile and editors
+# Editor and interpreter byproducts (skill-lint uses ast.parse, so it writes none)
 __pycache__/
 *.pyc
 .DS_Store

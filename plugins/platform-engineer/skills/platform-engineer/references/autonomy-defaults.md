@@ -176,8 +176,10 @@ created.
 
 ## Commit + push + PR strategy
 - Branch naming: `claude/<short-task-slug>` (e.g. `claude/ratelimit-middleware`),
-  which is what `/git --autonomous` creates; the git skill's
-  `references/branch-naming-conventions.md` is the single source.
+  which is what `/git --autonomous` creates. The rule, as the `engg` plugin's
+  `git` skill states it: lowercase kebab-case slug derived from the task, max
+  50 characters, no trailing hyphen; `{TICKET-ID}/{slug}` when a ticket
+  exists, `{feat|fix|chore}/{slug}` when a human is driving.
 - Commit by coherent subtask. Atomic commits preferred. Avoid noisy
   micro-commits AND giant commits.
 - Commit only after relevant validation passes (or commit a known-failing

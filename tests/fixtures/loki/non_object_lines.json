@@ -1,0 +1,8 @@
+{"status":"success","data":{"resultType":"streams","result":[
+ {"stream":{"service_name":"api","severity":"INFO"},"values":[
+   ["1759190400000000000","12345"],
+   ["1759190401000000000","[1,2]"],
+   ["1759190402000000000","null"],
+   ["1759190403000000000","\"a json string\""],
+   ["not-a-timestamp","{\"message\":\"odd timestamp\"}"]]}
+]}}

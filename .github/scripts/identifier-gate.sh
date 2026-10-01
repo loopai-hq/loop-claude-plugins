@@ -27,7 +27,7 @@ set -uo pipefail
 # own patterns when the gate is run over the repository.
 DEFAULT_PATTERNS='(^|[^A-Za-z0-9])(C0|U0|S0|G0)[A-Z0-9]{8,}([^A-Za-z0-9]|$)|/[U]sers/[a-z]|/home/[a-z]|\.nip\.io|\.sslip\.io|[a-z0-9-]+\.sentry\.io|(^|[^a-z0-9-])[a-z]+(-[a-z]+)+-[0-9]{6}([^0-9]|$)|[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[a-z]{2,}'
 
-ALLOWED='engineering@tryloop\.ai|security@loopai\.com|github\.com/loopai-hq/(agent-sessions|loop-claude-plugins)|[A-Za-z0-9._%+-]+@example\.(com|org|net)|[A-Za-z0-9._%+-]+@users\.noreply\.github\.com|noreply@[A-Za-z0-9.-]+|(us|de)\.sentry\.io'
+ALLOWED='engineering@tryloop\.ai|security@loopai\.com|github\.com/loopai-hq/(loop-sessions|loop-plugins)|(@|github\.com/)[b]havathi-loop|[A-Za-z0-9._%+-]+@example\.(com|org|net)|[A-Za-z0-9._%+-]+@users\.noreply\.github\.com|noreply@[A-Za-z0-9.-]+|(us|de)\.sentry\.io'
 
 if [ -n "${IDENTIFIER_GATE_PATTERNS:-}" ]; then
   PATTERNS="${IDENTIFIER_GATE_PATTERNS}|${DEFAULT_PATTERNS}"
@@ -41,10 +41,12 @@ raw_hits() {
   # Plain grep rather than git grep on purpose: it behaves the same on a CI
   # checkout, also covers untracked files in a local run, and cannot be fooled
   # by an exported tree that happens to sit inside some other git work tree.
+  # --exclude=.git as well as --exclude-dir=.git: in a linked git worktree
+  # .git is a one-line pointer file, never tracked content.
   if [ "$#" -gt 0 ]; then
-    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude-dir=examples --exclude=LICENSE "$@"
+    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude=.git --exclude-dir=examples --exclude=LICENSE "$@"
   else
-    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude-dir=examples --exclude=LICENSE .
+    grep -rnIE "$PATTERNS" --exclude-dir=.git --exclude=.git --exclude-dir=examples --exclude=LICENSE .
   fi
 }
 

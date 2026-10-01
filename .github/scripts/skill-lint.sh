@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Static lint for marketplace skills. Blocks on embedded secrets, non-portable
-# absolute paths, malformed SKILL.md frontmatter, and scripts that don't compile.
+# absolute paths, malformed SKILL.md frontmatter, and scripts that don't
+# compile. With no arguments it also runs the fixture tests under tests/.
 #
 # Usage:
-#   skill-lint.sh <file> [file ...]   # lint the given files (CI passes the PR diff)
-#   skill-lint.sh                      # no args: lint every file under plugins/
+#   skill-lint.sh <file> [file ...]   # lint the given files
+#   skill-lint.sh                      # no args: lint every file under plugins/ and run tests/
 #
 # Exits non-zero if any check fails.
 set -uo pipefail
@@ -32,14 +33,14 @@ while IFS= read -r f; do
   [ -f "$f" ] || continue
 
   # 1. embedded secrets (report location only, never the value)
-  for ln in $(grep -nEI "$SECRET_RE" "$f" 2>/dev/null | cut -d: -f1); do
-    report "$f:$ln: possible embedded credential — use env var / Secret Manager"
-  done
+  while IFS= read -r ln; do
+    [ -n "$ln" ] && report "$f:$ln: possible embedded credential — use env var / Secret Manager"
+  done < <(grep -nEI "$SECRET_RE" "$f" 2>/dev/null | cut -d: -f1)
 
   # 2. non-portable absolute paths
-  for ln in $(grep -nEI "$PATH_RE" "$f" 2>/dev/null | cut -d: -f1); do
-    report "$f:$ln: hardcoded absolute path — use \${CLAUDE_PLUGIN_ROOT}/skills/<skill>/<file> or an env var"
-  done
+  while IFS= read -r ln; do
+    [ -n "$ln" ] && report "$f:$ln: hardcoded absolute path — use \${CLAUDE_PLUGIN_ROOT}/skills/<skill>/<file> or an env var"
+  done < <(grep -nEI "$PATH_RE" "$f" 2>/dev/null | cut -d: -f1)
 
   case "$f" in
     */SKILL.md)
@@ -50,7 +51,9 @@ while IFS= read -r f; do
       printf '%s\n' "$fm" | grep -q '^version:' && report "$f: SKILL.md has disallowed 'version:' frontmatter key"
       ;;
     *.py)
-      python3 -m py_compile "$f" 2>/dev/null || report "$f: py_compile failed"
+      # ast.parse rather than py_compile: the latter writes __pycache__ into the tree.
+      python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read(), sys.argv[1])' "$f" 2>/dev/null \
+        || report "$f: python syntax check failed"
       ;;
     *.sh)
       bash -n "$f" 2>/dev/null || report "$f: bash -n syntax check failed"
@@ -59,6 +62,11 @@ while IFS= read -r f; do
 done <<EOF
 $FILES
 EOF
+
+# 4. fixture tests (whole-tree runs only): parse_logs.py against tests/fixtures
+if [ "$#" -eq 0 ] && [ -f tests/test_parse_logs.py ]; then
+  PYTHONDONTWRITEBYTECODE=1 python3 tests/test_parse_logs.py || report "tests/test_parse_logs.py failed"
+fi
 
 if [ "$fail" -ne 0 ]; then
   echo "skill-lint: FAILED"

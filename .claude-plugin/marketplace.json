@@ -1,6 +1,6 @@
 {
   "name": "loop-plugins",
-  "description": "Loop AI public Claude Code plugins: on-call and incident response skills, engineering workflow skills, and an orchestrating platform-engineer skill",
+  "description": "Loop AI public Claude Code plugins: oncall (Grafana Loki queries, root cause analysis, on-call health report), engg (git and PR lifecycle, code review, codebase investigation, plans and design docs, review agents) and platform-engineer (an orchestrating skill that routes tasks through the other two and keeps durable workstream state)",
   "owner": {
     "name": "Loop AI",
     "email": "engineering@tryloop.ai"
@@ -9,17 +9,46 @@
     {
       "name": "oncall",
       "source": "./plugins/oncall",
-      "description": "On-call and incident response skills: Grafana Loki log queries, structured root cause analysis, and an on-call health report"
+      "description": "On-call and incident response skills: Grafana Loki log queries, structured root cause analysis, and an on-call health report",
+      "category": "sre",
+      "tags": [
+        "oncall",
+        "incident-response",
+        "rca",
+        "loki",
+        "grafana",
+        "sentry",
+        "posthog",
+        "observability"
+      ]
     },
     {
       "name": "engg",
       "source": "./plugins/engg",
-      "description": "Engineering workflow skills: git and PR lifecycle, code review, codebase investigation, planning and design docs, plus two review agents"
+      "description": "Engineering workflow skills: git and PR lifecycle, code review, codebase investigation, planning and design docs, plus two review agents",
+      "category": "development",
+      "tags": [
+        "git",
+        "pull-requests",
+        "code-review",
+        "codebase",
+        "planning",
+        "design-docs",
+        "agents"
+      ]
     },
     {
       "name": "platform-engineer",
       "source": "./plugins/platform-engineer",
-      "description": "Orchestrating skill: classifies a task, routes it to the right specialised skill chain, and keeps durable multi-session workstream state"
+      "description": "Orchestrating skill: classifies a task, routes it to the right specialised skill chain, and keeps durable multi-session workstream state",
+      "category": "orchestration",
+      "tags": [
+        "orchestration",
+        "workstream",
+        "multi-session",
+        "routing",
+        "agent-workflow"
+      ]
     }
   ]
 }

@@ -12,7 +12,7 @@ description: >-
   "continue", "end to end", "get it live", "sweep", "fleet", "team lead",
   "delegate", "manage the project", multi-item task lists, and any prompt that
   names two or more subsystems.
-argument-hint: '"task or workstream description"'
+argument-hint: "[task or workstream description]"
 ---
 
 # Platform Engineer — the orchestrating entry point
@@ -20,10 +20,11 @@ argument-hint: '"task or workstream description"'
 One skill that owns the WHOLE task: classify the intent, route each part to the
 specialized skill that owns it, stitch the handoffs, keep durable state so any
 session can resume with one line, and do not return until the definition of done
-holds. Built from mining ~70 real sessions: the dominant loss modes were
-re-pasting the same context every resume, skills doing only their literal checklist,
+holds. It exists because the same losses recurred across real sessions:
+context re-pasted on every resume, skills doing only their literal checklist,
 review loops skipped before merge, and orchestration living in prompt footers
-instead of in a skill.
+instead of in a skill (how the material was derived is in the plugin README,
+"Provenance").
 
 ## Configuration
 
@@ -111,10 +112,10 @@ submodule or library PR merges before the PR that bumps it).
 
 | Intent shape | Route |
 |---|---|
-| Backend or library code change (feature, refactor, bugfix, schema, API) | your language-specific engineer skill, if you have one; otherwise `/plan` then the feature chain below by hand |
+| Backend or library code change (feature, refactor, bugfix, schema, API) | your language-specific engineer skill, if you have one; otherwise `/engg:plan-issue` then the feature chain below by hand |
 | Frontend change | your frontend engineer skill, if you have one; otherwise the feature chain by hand |
 | "Where is this code / how does X work / trace the flow" | `/codebase-investigator`, or a code-graph MCP if available |
-| Design or architecture decision before code | `/plan` (written plan with trade-offs); `/evaluate` for go/no-go on a major change |
+| Design or architecture decision before code | `/engg:plan-issue` (written plan with trade-offs, as a GitHub issue; the bare `/plan` is Claude Code's built-in plan mode); `/evaluate` for go/no-go on a major change |
 | Document a system, module, or pattern | `/doc` |
 | Production incident, RCA, "what is happening here <chat link>" | `/rca` + `/loki` (oncall plugin); discipline per `references/investigation-standard.md` |
 | Logs, "what's failing", service errors | `/loki` |
@@ -136,7 +137,7 @@ chain entry point over improvising.
 Three canonical chains. Each step hands the next an artifact on disk, never a
 chat summary; every chain ends with knowledge capture.
 
-- **Feature / refactor**: `/plan` (design + written plan) → `/git` (worktree +
+- **Feature / refactor**: `/engg:plan-issue` (design + written plan) → `/git` (worktree +
   branch) → implement (your engineer skill, or by hand with tests first) →
   review loop (a fresh-context reviewer per component, then a whole-work
   adversarial pass that never sees design rationale; loop until no substantive
@@ -164,10 +165,10 @@ knowledge base or recall tool and a code-graph MCP live in the user's local
 setup, not this repo. If either appears in the available-skills/tools list, the
 engine's INTAKE recall pass is REQUIRED, not optional — one recall query on the
 task text before any research fan-out, hits triaged into `brief.md` — and use
-them again at capture time (durable patterns). Evidence for the requirement:
-with recall optional, a heavily-funded capture pipeline measured 2 recalls
-across 1,975 transcripts. If absent, skip silently — memory files under
-`~/.claude/projects/*/memory/` are the fallback.
+them again at capture time (durable patterns). The pass is mandatory because,
+left optional, it is almost never run (see the plugin README, "Provenance").
+If absent, skip silently — memory files under `~/.claude/projects/*/memory/`
+are the fallback.
 
 ## Step 2 — Orchestration duties (what the subskills don't own)
 

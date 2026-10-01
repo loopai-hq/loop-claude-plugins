@@ -1,7 +1,8 @@
 # Standing directives — the default engineering contract
 
-Mined from ~70 real sessions and a year-long prompt archive: these instructions
-were pasted as prompt footers on nearly every engineer invocation. They are now
+These instructions were pasted as prompt footers on nearly every engineer
+invocation across real sessions and a year-long prompt archive (plugin README,
+"Provenance"). They are now
 DEFAULT behavior of this skill. The user should never need to paste them again;
 treat every one as if it appeared verbatim at the end of the task prompt. The
 execution fields they run under (autonomy, depth, blockers, PR body shape) are in

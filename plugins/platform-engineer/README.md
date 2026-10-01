@@ -5,11 +5,40 @@ task, routes each part to the specialised skill that should do it, and keeps
 durable state so any later session resumes with a single line.
 
 ```bash
-claude plugin marketplace add loopai-hq/loop-claude-plugins
-claude plugin install oncall@loop-plugins
-claude plugin install engg@loop-plugins
-claude plugin install platform-engineer@loop-plugins
+claude plugin marketplace add loopai-hq/loop-plugins
+claude plugin install platform-engineer@loop-plugins   # declares oncall and engg as dependencies; all three install
 ```
+
+## How it works
+
+One skill, `platform-engineer`, is the entry point. On every invocation it
+resolves or creates a workstream directory (`docs/workstreams/<slug>/`) so
+state lives on disk rather than in the chat; classifies the ask and routes
+each part to a specialised skill from `oncall` or `engg` (or your own
+engineer skill) with a contract-first spec; runs the review loop before any
+merge; and refuses to declare completion until the definition of done holds.
+The reference files under `skills/platform-engineer/references/` are read in
+a fixed order at the stage that needs them: `standing-directives.md` and
+`autonomy-defaults.md` at the start of every run, `execution-engine.md`
+(the spine) before the first dispatch, then `orchestration-playbook.md` and
+`execution-mechanics.md` per engine stage, `investigation-standard.md` for
+production investigations, and `self-augmentation.md` only when its flag is
+on.
+
+## Try it
+
+```
+/platform-engineer:platform-engineer "add rate limiting to the public API and get it live"
+```
+
+The skill creates `docs/workstreams/api-rate-limiting/` with `brief.md` (the
+ask, the reconstructed intent, the definition of done) and `state.json`,
+classifies the ask as a feature chain, dispatches `/engg:plan-issue` for the
+design issue and `/engg:git` for the branch and PR, runs a fresh-context
+review pass, hands the PR to `/engg:pr-babysit`, watches the deploy, and ends
+with `COMPLETION: PR #124 merged and deployed; state.json closed out`. A later
+session resumes with "Continue the api-rate-limiting workstream" and picks up
+from disk.
 
 ## Skill
 
@@ -19,10 +48,10 @@ claude plugin install platform-engineer@loop-plugins
 
 The routes it dispatches to ship in this marketplace: `/rca`, `/loki` and
 `/on-call-report` from `oncall`; `/git`, `/pr-review`, `/pr-check`,
-`/pr-babysit`, `/codebase-investigator`, `/plan`, `/evaluate`, `/doc`,
+`/pr-babysit`, `/codebase-investigator`, `/engg:plan-issue`, `/evaluate`, `/doc`,
 `/debug-service` and `/test-fix` from `engg`. Implementation work goes to a
 language-specific engineer skill of your own when you have one; otherwise the
-skill runs the feature chain (`/plan` -> `/git` -> implement -> review loop ->
+skill runs the feature chain (`/engg:plan-issue` -> `/git` -> implement -> review loop ->
 `/git` -> `/pr-check` -> `/pr-babysit`) by hand.
 
 ## Configuration
@@ -54,9 +83,35 @@ The skill loads these from `skills/platform-engineer/references/` as needed:
 | `execution-mechanics.md` | Hooks, watchers, quotas, guarded operations, worked commands. |
 | `self-augmentation.md` | The config-gated close-out that proposes skill improvements from what the run learned. |
 
+## Provenance
+
+The reference material was distilled, not invented. The standing directives
+are the instructions that were pasted as prompt footers on nearly every
+engineer invocation across roughly seventy real sessions and a year-long
+prompt archive. The orchestration playbook and execution mechanics were
+mined from behaviour digests of six long sessions (about 8,700 assistant
+messages from a shared transcript store, including one three-day, fifty-PR
+run referred to in the text as "the marathon"), a control session on a
+different model tier on the same harness, a corpus of 58 outcome-labelled
+sessions, a first-person session introspection, a model-router assessment,
+and a 2026-07 reading of Anthropic's multi-agent research and
+long-running-harness posts, Building Effective Agents, the Claude Code
+sub-agent and agent-team docs, Magentic-One, Temporal durability patterns,
+Plan-and-Act / Pre-Act portability evidence and LLM-judge bias studies. The
+figures quoted in parentheses in the reference files (parallel-call rates,
+status-to-report ratios, idle hours on question gates, the "2 recalls across
+1,975 transcripts" that makes the recall pass mandatory) come from that
+material; parallel-call rates were deduplicated by tool-use id, and
+digest-level counts without that deduplication were discarded. None of the
+source sessions, people or customers are named anywhere in the plugin.
+
 ## Notes
 
-- It never replaces the specialised skills; it invokes them. Install `oncall`
-  and `engg` alongside it or most routes will be missing.
+- It never replaces the specialised skills; it invokes them. `oncall` and
+  `engg` are declared dependencies, so installing this plugin installs them.
+- It pre-approves no tools of its own; a dispatched skill's `allowed-tools`
+  apply while it runs. So a push or a deploy label through `/git` does not
+  prompt (that is `git`'s grant), while a merge, an issue comment or a chat
+  post does.
 - Git mechanics always go through `/git`; the skill never runs
   `git checkout -b` or `gh pr create` itself.

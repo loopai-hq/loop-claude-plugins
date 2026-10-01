@@ -1,12 +1,16 @@
 {
   "name": "platform-engineer",
   "description": "Autonomous platform-engineer orchestrator: routes any engineering task to the right skill chain (engineer skills, triage, data queries, PR babysitting, knowledge capture) without being told which one, and owns multi-session workstreams end to end",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "dependencies": [
+    "oncall",
+    "engg"
+  ],
   "author": {
     "name": "Loop AI"
   },
-  "homepage": "https://github.com/loopai-hq/loop-claude-plugins",
-  "repository": "https://github.com/loopai-hq/loop-claude-plugins",
+  "homepage": "https://github.com/loopai-hq/loop-plugins",
+  "repository": "https://github.com/loopai-hq/loop-plugins",
   "license": "MIT",
   "keywords": [
     "claude-code",

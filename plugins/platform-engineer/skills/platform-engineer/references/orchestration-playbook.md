@@ -1,6 +1,6 @@
 # Orchestration playbook — frontier-parity mechanics on any session model
 
-> The spine is `references/execution-engine.md` — read it first. This file is
+> The spine is `execution-engine.md` (next to this file) — read it first. This file is
 > its rulebook: consult per engine stage via the stage map, not linearly.
 
 The orchestration behaviors this skill demands (task graphs, delegation with
@@ -8,15 +8,11 @@ review loops, monitors, parallel fan-out with verification, durable resume)
 are HARNESS capabilities plus a doctrine — not model magic. A frontier model
 applies the doctrine spontaneously; any other model applies it when each
 behavior is an explicit, checkable step with a worked example. This playbook
-is that explicit form.
+is that explicit form (sources: plugin README, "Provenance").
 
 Rules are tagged **[INV]** (invariant — holds for any model) or **[COMP]**
 (compensation for non-frontier session models — a stronger model may override
-one only with a justification recorded in the journal). Research basis
-(2026-07 deep-dive): Anthropic's multi-agent research system and
-long-running-harness posts, Building Effective Agents, Claude Code
-sub-agent/agent-team docs, Magentic-One, Temporal durability patterns,
-Plan-and-Act / Pre-Act portability evidence, LLM-judge bias studies.
+one only with a justification recorded in the journal).
 
 **Workstream paths used throughout** (`<ws>` = `docs/workstreams/<slug>/`,
 per SKILL.md Step 0): `state.json` (mutable coordination state), `tasks.json`
@@ -70,7 +66,7 @@ writers); fan-out work needs both.
 1. [INV] Children inherit the SESSION model. Before dispatch, check the agent
    definition (`.claude/agents/*.md` frontmatter) for `model:`; if present and
    lower than the session model, pass an explicit model override and journal it.
-   Never pass a cheaper model to save cost. [COMP] On Opus-class session models,
+   Never pass a cheaper model to save cost. [COMP] On frontier-class session models,
    orchestration and delegated engineering run at `xhigh` effort; journal the
    effort choice like the model choice, and lowering it needs journaled
    justification.
@@ -151,7 +147,7 @@ writers); fan-out work needs both.
 2. Output: write full artifact to <path>; return {path, 2-line summary,
    verdict: PASS|FAIL|BLOCKED}
 3. Tools/sources: <which>; budget: <N> tool calls; model/effort: <explicit —
-   on Opus-class sessions write "xhigh" here and journal it (B.1); "inherit"
+   on frontier-class sessions write "xhigh" here and journal it (B.1); "inherit"
    without a journal line is a defect>
 4. Boundaries: out of scope = <...>; files NOT owned = <...>
 5. Acceptance criteria: <binary, independently checkable, with anti-gaming

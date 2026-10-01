@@ -1,0 +1,63 @@
+name: Skill request
+description: Propose a new skill, or a change to an existing skill's procedure.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Skills are procedures, not integrations: a good request describes what a person would say, what the skill should do step by step, and what it should never do. Company-specific details (ids, hostnames, channel names) go into configuration variables, never into the skill.
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      description: "`oncall` for incident and observability work, `engg` for development workflow, `platform-engineer` for orchestration."
+      options:
+        - oncall
+        - engg
+        - platform-engineer
+        - a new plugin (explain why the existing three do not fit)
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Proposed skill name
+      description: Lowercase, hyphens, matches the directory; check it does not collide with a Claude Code built-in command (`/plan`, `/review`, `/commit`, ...).
+      placeholder: deploy-check
+  - type: textarea
+    id: triggers
+    attributes:
+      label: What a user would say
+      description: The phrases that should trigger it, and one example invocation with arguments.
+      placeholder: |
+        "is the deploy healthy", "check the rollout"
+        /oncall:deploy-check api
+    validations:
+      required: true
+  - type: textarea
+    id: procedure
+    attributes:
+      label: Procedure
+      description: Numbered steps, the tools each step needs (`gh`, `curl`, an MCP server by name), and what the skill writes or posts at the end.
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration it would read
+      description: Variables, with meaning and default. Reuse names from the README table where the meaning is the same.
+      placeholder: |
+        DEPLOY_URL — health endpoint of the service — required
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: What it must never do
+      placeholder: Never restart a service; never post to chat without asking.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This request contains no company-specific identifiers.
+          required: true
+        - label: I am willing to open the pull request, or I am asking a maintainer to.

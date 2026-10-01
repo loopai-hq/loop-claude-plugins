@@ -3,7 +3,7 @@ name: security-reviewer
 description: |
   Use this agent to review code for security vulnerabilities, authentication/authorization logic, user input handling, or code interacting with databases, external systems, or credentials. Invoke proactively after writing security-sensitive code.
 tools: [Bash, Glob, Grep, Read]
-model: opus
+model: inherit
 color: yellow
 ---
 

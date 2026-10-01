@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/loopai-hq/loop-plugins/security/advisories/new
+    about: Report privately. Never open a public issue for a security problem (see SECURITY.md).
+  - name: Claude Code itself (install, login, plugin system)
+    url: https://code.claude.com/docs
+    about: This project is not affiliated with Anthropic; questions about the product go to its documentation.
