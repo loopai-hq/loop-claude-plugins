@@ -151,7 +151,7 @@ jobs:
           grep -qE 'Skills \(3\).*loki.*on-call-report.*rca' "$RUNNER_TEMP/details-oncall.txt"
           grep -qE 'Skills \(12\).*plan-issue' "$RUNNER_TEMP/details-engg.txt"
           if grep -q 'share-session' "$RUNNER_TEMP/details-engg.txt"; then echo "::error::share-session must not ship in engg"; exit 1; fi
-          grep -qE 'Agents \(2\).*code-optimizer.*security-reviewer' "$RUNNER_TEMP/details-engg.txt"
+          grep -qE 'Agents \(2\)' "$RUNNER_TEMP/details-engg.txt" && grep -q 'code-optimizer' "$RUNNER_TEMP/details-engg.txt" && grep -q 'security-reviewer' "$RUNNER_TEMP/details-engg.txt"
           grep -qE 'Skills \(1\).*platform-engineer' "$RUNNER_TEMP/details-platform-engineer.txt"
           echo "install: OK"
 

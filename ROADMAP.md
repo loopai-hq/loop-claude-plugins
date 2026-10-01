@@ -45,8 +45,8 @@ the end so the question is not reopened every quarter.
   CHANGELOG section (today only the version bump is enforced).
 
 ### Decisions for the maintainers
-- Canonical contact domain (`tryloop.ai` in `marketplace.json` vs
-  `loopai.com` in `SECURITY.md`).
+- Canonical contact domain: the owner address in `marketplace.json` and
+  the security address in `SECURITY.md` use two different domains; pick one.
 
 ## Declined
 
