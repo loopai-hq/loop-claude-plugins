@@ -140,8 +140,10 @@ Also check:
 
 ### Deployment tips
 
+- Check deployments FIRST if the issue started suddenly for multiple users (the ordering rule at the top of the Investigation Workflow)
 - Use `gh pr diff` to see exactly what code changed in a suspicious deployment
 - Compare the deployment timestamp with the issue report timestamp
+- Run the deployment check in parallel with the GCloud log queries; they read different systems
 
 
 ## Step 10 — Known issues and prior RCAs

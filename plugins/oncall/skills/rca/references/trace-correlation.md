@@ -53,3 +53,14 @@ The **traceparent** (or `trace_id`) is the single thread that ties the entire re
 - One page load = one trace_id shared by ALL API calls from that page load
 - Multiple trace_ids for the same page = user loaded it multiple times (compare request bodies to spot filter changes)
 - Always extract trace_ids FIRST from PostHog, then follow them through GCloud, Sentry, and Datadog
+
+### Maximize Parallelism
+- Steps 2, 3, 4, 5 can ALL run in parallel — they query different systems
+- For each trace_id, run GCloud HTTP logs and app logs queries in parallel
+- Run the deployment check in parallel with GCloud log queries
+
+### General
+- Check ALL sessions if user visited the page multiple times — the issue may be in an earlier session with different filters
+- When the user provides a screenshot, analyze what DID load (summary cards, filters) vs what DIDN'T (charts, tables) to narrow the investigation
+- Compare response sizes across APIs in the same trace — if one is much smaller, that's likely the broken one
+- If the issue is intermittent, check for feature flags that might be toggling behavior
