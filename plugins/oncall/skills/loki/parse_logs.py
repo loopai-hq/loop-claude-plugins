@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
-"""Parse a Loki query_range JSON response from stdin and print the log entries.
+"""Helpers for the loki skill. Stdlib only; the only python3 the skill runs.
 
-Exit codes: 0 entries printed (or none found), 1 the response could not be
-used (empty, not JSON, not a Loki success response, not a log-stream result).
-Every failure prints one explanatory line, never a traceback.
+Modes:
+  (no arguments)     Parse a Loki query_range JSON response from stdin and
+                     print the log entries, newest first.
+  --list             Parse a Loki labels or label-values JSON response from
+                     stdin and print the sorted names (internal "__" labels
+                     are skipped).
+  --range LOOKBACK   Print the query window as Unix nanoseconds, one
+                     "start=" and one "end=" line, for a lookback such as
+                     30m, 1h, 6h, 24h, 2d or 7d (end is now).
+
+Exit codes: 0 output printed (or nothing found), 1 the input could not be
+used (empty, not JSON, not a Loki success response, not a log-stream result,
+bad lookback). Every failure prints one explanatory line, never a traceback.
 """
 import json
+import re
 import sys
+import time
 from datetime import datetime, timezone
 
 MAX_LINE = 500
 PREVIEW = 200
+UNITS = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 7 * 86400}
 
 
 def fail(message):
@@ -42,7 +55,8 @@ def format_entry(ts_ns, line):
     return when, msg, src
 
 
-def main():
+def read_response():
+    """Read stdin and return the decoded Loki success response, or fail."""
     raw = sys.stdin.read()
     if not raw.strip():
         fail("Empty response from Loki")
@@ -54,7 +68,42 @@ def main():
         fail(f"Loki response is not a JSON object. First {PREVIEW} bytes:\n{raw[:PREVIEW]}")
     if data.get("status") != "success":
         fail(f"Loki query failed: {json.dumps(data)[:PREVIEW]}")
+    return data
 
+
+def print_range(lookback):
+    """Print start= and end= in Unix nanoseconds for a lookback like 6h."""
+    match = re.fullmatch(r"\s*(\d+)\s*([smhdw])\s*", lookback or "", re.IGNORECASE)
+    if not match:
+        fail(f"Bad lookback {lookback!r}; use a number and a unit, e.g. 30m, 1h, 6h, 24h, 2d, 7d")
+    seconds = int(match.group(1)) * UNITS[match.group(2).lower()]
+    if seconds <= 0:
+        fail("Lookback must be positive")
+    end = int(time.time())
+    print(f"start={end - seconds}000000000")
+    print(f"end={end}000000000")
+
+
+def print_list():
+    """Print the names from a /labels or /label/<name>/values response."""
+    data = read_response()
+    names = data.get("data")
+    if names is None:
+        names = []
+    if not isinstance(names, list):
+        fail("Loki response 'data' is not a list; this mode reads /labels and /label/<name>/values responses")
+    names = sorted(str(n) for n in names if not str(n).startswith("__"))
+    if not names:
+        print("No names returned (empty list).")
+        return
+    print(f"{len(names)} names:")
+    for name in names:
+        print(f"  - {name}")
+
+
+def print_logs():
+    """Print the entries of a query_range response, newest first."""
+    data = read_response()
     body = data.get("data")
     if not isinstance(body, dict):
         fail("Loki response has no 'data' object")
@@ -97,5 +146,16 @@ def main():
         print()
 
 
+def main(argv):
+    if not argv:
+        print_logs()
+    elif argv == ["--list"]:
+        print_list()
+    elif argv[0] == "--range" and len(argv) == 2:
+        print_range(argv[1])
+    else:
+        fail("Usage: parse_logs.py [--list | --range LOOKBACK] (log JSON on stdin)")
+
+
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

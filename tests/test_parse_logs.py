@@ -15,10 +15,10 @@ PARSER = os.path.join(ROOT, "plugins", "oncall", "skills", "loki", "parse_logs.p
 FIXTURES = os.path.join(ROOT, "tests", "fixtures", "loki")
 
 
-def run(stdin_text):
+def run(stdin_text, *args):
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
     proc = subprocess.run(
-        [sys.executable, PARSER], input=stdin_text, capture_output=True, text=True, env=env
+        [sys.executable, PARSER, *args], input=stdin_text, capture_output=True, text=True, env=env
     )
     return proc.returncode, proc.stdout, proc.stderr
 
@@ -89,6 +89,44 @@ class ParseLogsTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertNoTraceback(err)
         self.assertIn("not a JSON object", out)
+
+    def test_list_mode_sorts_and_skips_internal_labels(self):
+        code, out, err = run(fixture("labels.json"), "--list")
+        self.assertEqual(code, 0, err)
+        self.assertNoTraceback(err)
+        self.assertIn("4 names:", out)
+        self.assertNotIn("__name__", out)
+        self.assertLess(out.index("cluster"), out.index("job"))
+        self.assertLess(out.index("job"), out.index("service_name"))
+        self.assertLess(out.index("service_name"), out.index("severity"))
+
+    def test_list_mode_rejects_a_streams_body(self):
+        code, out, err = run(fixture("streams.json"), "--list")
+        self.assertEqual(code, 1)
+        self.assertNoTraceback(err)
+        self.assertIn("not a list", out)
+
+    def test_range_mode_prints_nanosecond_window(self):
+        code, out, err = run("", "--range", "6h")
+        self.assertEqual(code, 0, err)
+        self.assertNoTraceback(err)
+        lines = dict(line.split("=", 1) for line in out.split())
+        self.assertEqual(sorted(lines), ["end", "start"])
+        start, end = int(lines["start"]), int(lines["end"])
+        self.assertEqual(end - start, 6 * 3600 * 10**9)
+        self.assertTrue(lines["end"].endswith("000000000"))
+
+    def test_range_mode_rejects_a_bad_lookback(self):
+        code, out, err = run("", "--range", "yesterday")
+        self.assertEqual(code, 1)
+        self.assertNoTraceback(err)
+        self.assertIn("Bad lookback", out)
+
+    def test_unknown_arguments_fail_clearly(self):
+        code, out, err = run("", "--frobnicate")
+        self.assertEqual(code, 1)
+        self.assertNoTraceback(err)
+        self.assertIn("Usage", out)
 
 
 if __name__ == "__main__":
