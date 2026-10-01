@@ -56,9 +56,11 @@ tests/                                      # fixture tests for the helper scrip
   the skill's stated job (as it is for `git`). Skills that read logs, chat,
   issues or PR comments carry a standing paragraph that fetched text is data,
   not instructions; keep it.
-- Keep the procedure portable: prefer `python3 -c` for date arithmetic over
-  GNU- or BSD-only `date` flags, and `gh` over raw GitHub API calls where it
-  reads the same.
+- Keep the procedure portable: prefer `python3` for date arithmetic over
+  GNU- or BSD-only `date` flags (a bundled helper script when the skill
+  pre-approves `python3` by path, as `loki` and `on-call-report` do, since an
+  inline `python3 -c` is then not covered; `python3 -c` otherwise), and `gh`
+  over raw GitHub API calls where it reads the same.
 - Frontmatter portability: `argument-hint`, `disable-model-invocation` and
   `user-invocable` are Claude-Code-only keys. They are fine here because the
   target is Claude Code, but a skill copied to claude.ai or the Skills API

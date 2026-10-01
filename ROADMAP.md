@@ -35,8 +35,7 @@ the end so the question is not reopened every quarter.
 
 ### Submission to the Anthropic plugin directory
 - Pre-submission checklist items still open: `userConfig` for the tokens
-  the skills read from the environment, evals, and a decision on the
-  repository name (see "Decisions for the maintainers" below).
+  the skills read from the environment, and evals.
 
 ### Quality gates
 - `skills-ref validate` per skill (the Agent Skills reference validator) in
@@ -52,8 +51,10 @@ the end so the question is not reopened every quarter.
 
 - **`disable-model-invocation` on `git` and `pr-babysit`.** `platform-engineer`
   dispatches both of them by name; disabling model invocation would break
-  every feature chain. Pushes and merges are still gated by Claude Code's
-  own permission prompts, which the plugins do not pre-approve.
+  every feature chain. A merge is still gated by Claude Code's own
+  permission prompt, which no skill pre-approves; a push through `/git` is
+  pre-approved by `git`'s own `allowed-tools`, as the README's "Trust and
+  security" section lists.
 - **Widening the identifier gate's Slack-id pattern** to
   `[CDGSUW][0-9A-Z]{8,10}`: it matches ordinary all-caps words (`DASHBOARD`,
   `WORKSTREAM`), and the private pattern set in CI covers the real ids.

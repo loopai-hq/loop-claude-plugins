@@ -1,0 +1,41 @@
+name: Question
+description: Ask how to use, configure or combine these plugins.
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a skill that misbehaves use the bug report instead. Questions about Claude Code itself (install, login, the plugin system) go to its documentation; this project is not affiliated with Anthropic. Replace every real identifier (project ids, channel ids, hostnames, tokens, names) with a placeholder; this is a public repository.
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      options:
+        - oncall
+        - engg
+        - platform-engineer
+        - the marketplace or repository in general
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What you are trying to do, what you tried, and what you read first (README section, SKILL.md).
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Claude Code and plugin versions
+      description: Output of `claude --version` and the relevant line of `claude plugin list`, if it matters for the question.
+      placeholder: 2.1.285 (Claude Code); oncall 0.2.0
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This question contains no real identifier, token or internal hostname.
+          required: true
+        - label: I searched existing issues and SUPPORT.md first.
+          required: true

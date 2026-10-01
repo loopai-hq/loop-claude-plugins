@@ -109,8 +109,9 @@ source sessions, people or customers are named anywhere in the plugin.
 
 - It never replaces the specialised skills; it invokes them. `oncall` and
   `engg` are declared dependencies, so installing this plugin installs them.
-- It pre-approves no tools: every push, merge or post that a dispatched
-  skill causes goes through the permission prompt (or the dispatched skill's
-  own scoped `allowed-tools`).
+- It pre-approves no tools of its own; a dispatched skill's `allowed-tools`
+  apply while it runs. So a push or a deploy label through `/git` does not
+  prompt (that is `git`'s grant), while a merge, an issue comment or a chat
+  post does.
 - Git mechanics always go through `/git`; the skill never runs
   `git checkout -b` or `gh pr create` itself.

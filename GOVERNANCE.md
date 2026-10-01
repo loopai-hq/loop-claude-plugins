@@ -25,6 +25,12 @@ maintainer.
   (`skill-lint`, `identifier-gate`). The author cannot approve their own
   change. A maintainer re-runs the identifier gate with the private pattern
   set before merging a fork PR.
+- **Single-maintainer exception.** While [MAINTAINERS.md](MAINTAINERS.md)
+  lists one maintainer, that maintainer's own change merges after green CI
+  and a recorded self-review: the pull request description's checklist is
+  completed and the description says what was reviewed and how (the checks
+  run, the diff read). The exception ends when a second maintainer is added;
+  that pull request also removes this bullet.
 - **New skills or plugins** start as a skill-request issue so the scope is
   agreed before the work. See "Adding a skill" in
   [CONTRIBUTING.md](CONTRIBUTING.md).

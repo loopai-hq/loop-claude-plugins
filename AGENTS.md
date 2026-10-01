@@ -68,7 +68,9 @@ claude plugin details engg
   skill or agent updates the root README and the plugin README; adding a
   variable updates both configuration tables. `check-refs.sh` enforces the
   tables.
-- **Date arithmetic** uses `python3 -c`, not GNU/BSD-only `date` flags.
+- **Date arithmetic** uses `python3`, not GNU/BSD-only `date` flags: a
+  bundled helper script when the skill pre-approves `python3` by path (an
+  inline `python3 -c` is not covered by such a grant), `python3 -c` otherwise.
   Prefer `gh` over raw GitHub API calls where it reads the same.
 - **Commits**: conventional subjects (`feat:`, `fix:`, `docs:`, `ci:`,
   `chore:`), body says why. Do not add `Signed-off-by` (there is no DCO).

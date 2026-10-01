@@ -22,7 +22,9 @@ gate before it is merged, and a human is accountable for every line.
 Contributions that use AI are welcome under the policy in
 [CONTRIBUTING.md](CONTRIBUTING.md#ai-assisted-contributions).
 
-Tested with Claude Code 2.1.285. This project is not affiliated with or
+Validated and installed with Claude Code 2.1.285 in CI (`claude plugin
+validate --strict` and a headless clean install; no skill is invoked in CI,
+behavioural evals are on the roadmap). This project is not affiliated with or
 endorsed by Anthropic.
 
 ## Install
@@ -80,12 +82,15 @@ last six hours, and prints entries newest first: `[2026-09-30 08:14:02 UTC]
 /engg:git "add a /healthz endpoint"
 ```
 
-The skill pulls the default branch, creates `feat/add-a-healthz-endpoint`,
+With the change already in your working tree (the skill commits, it does not
+implement), it pulls the default branch, creates `feat/add-a-healthz-endpoint`,
 runs the formatter the repo already uses, commits with a message derived from
 the diff, pushes, opens a PR with a Summary / Test Plan body, and prints
-`PR: https://github.com/<owner>/<repo>/pull/123`, `Branch: feat/...`,
-`Labels: none`, then the next steps (`/engg:pr-check`, fix, `/engg:git`).
-With `LINEAR_API_KEY` set it also creates or links a Linear ticket.
+`PR: https://github.com/<owner>/<repo>/pull/123`, `Ticket: none`,
+`Branch: feat/add-a-healthz-endpoint`, `Labels: none`, then the next steps
+it names as `/pr-check`, fix, `/git` (the bare names; `/engg:pr-check` and
+`/engg:git` are the same skills). With `LINEAR_API_KEY` set it also creates or
+links a Linear ticket.
 
 **platform-engineer** (needs the other two plugins, which it installs):
 
@@ -126,7 +131,7 @@ the top listing exactly the variables it reads; the table below is the union.
 | `API_URL` | no | none | URL of your API host | `rca` |
 | `VERCEL_PROJECTS` | no | none | Comma-separated Vercel project names to check for deployments | `rca` |
 | `RCA_DOCS_DIR` | no | `docs/rca/` | Directory (relative to the repo) where RCA documents are written; `on-call-report` saves reports to its sibling `reports/` directory | `rca`, `on-call-report` |
-| `ONCALL_CHANNELS_FILE` | no | `${CLAUDE_PLUGIN_DATA}/channels.json` | Tiered Slack channel config; copy `channels.example.json` there (or anywhere outside the plugin) and fill it in | `on-call-report` |
+| `ONCALL_CHANNELS_FILE` | no | `~/.claude/plugins/data/oncall-loop-plugins/channels.json` | Tiered Slack channel config; copy `channels.example.json` there (or anywhere outside the plugin) and fill it in | `on-call-report` |
 | `COMPANY_NAME` | no | `GITHUB_ORG` | Name printed in report titles and document headings | `on-call-report` |
 | `LINEAR_API_KEY` | no | none | Linear personal API key. When unset, `git` skips ticket creation and lookup entirely | `git` |
 | `LINEAR_TEAM_ID` | no | none | Linear team id (UUID) used when creating tickets | `git` |
@@ -138,20 +143,26 @@ Linear is optional throughout. Nothing else in these plugins depends on it.
 ### Files you fill in
 
 Some skills read a config file you create from a shipped `*.example.*`
-template. Keep the filled-in copy in your own repository or under
-`${CLAUDE_PLUGIN_DATA}`, a per-plugin directory (`~/.claude/plugins/data/<plugin>/`)
-that Claude Code creates on first use and keeps across plugin updates. Never
-write it inside the installed plugin: a marketplace install lives in a
-version-keyed cache (`~/.claude/plugins/cache/loop-plugins/<plugin>/<version>/`)
-that is replaced on every `claude plugin update` and reinstall, so anything
-under `${CLAUDE_PLUGIN_ROOT}` is lost.
+template. Keep the filled-in copy in your own repository or in the plugin's
+data directory, which Claude Code keeps across plugin updates:
+`~/.claude/plugins/data/oncall-loop-plugins/` for `oncall` and
+`~/.claude/plugins/data/engg-loop-plugins/` for `engg` (the directory name is
+the plugin id, `oncall@loop-plugins`, with `@` replaced by `-`; create it if
+it does not exist yet). Inside a `SKILL.md` the same directory is
+`${CLAUDE_PLUGIN_DATA}`, which Claude Code substitutes when it loads the
+skill; that variable is not set in your shell, so use the full path when you
+copy a file by hand. Never write it inside the installed plugin: a
+marketplace install lives in a version-keyed cache
+(`~/.claude/plugins/cache/loop-plugins/<plugin>/<version>/`) that is replaced
+on every `claude plugin update` and reinstall, so anything under
+`${CLAUDE_PLUGIN_ROOT}` is lost.
 
 | File | Template (in the plugin) | Read by |
 |---|---|---|
-| `ONCALL_CHANNELS_FILE=/path/to/channels.json` (default `${CLAUDE_PLUGIN_DATA}/channels.json`) | `skills/on-call-report/channels.example.json` | `on-call-report` |
+| `ONCALL_CHANNELS_FILE=/path/to/channels.json` (default `~/.claude/plugins/data/oncall-loop-plugins/channels.json`) | `skills/on-call-report/channels.example.json` | `on-call-report` |
 | `$RCA_DOCS_DIR/routing-table.md` in your repo (default `docs/rca/routing-table.md`) | `skills/rca/references/routing-table.example.md` | `rca` |
 | `$RCA_DOCS_DIR/alerts.md` in your repo (default `docs/rca/alerts.md`) | `skills/rca/references/alerts.example.md` | `rca` |
-| `.claude/git-labels.json` in your repo (fallback `${CLAUDE_PLUGIN_DATA}/labels.json`) | `skills/git/labels.example.json` | `git` (optional deploy labels) |
+| `.claude/git-labels.json` in your repo (fallback `~/.claude/plugins/data/engg-loop-plugins/labels.json`) | `skills/git/labels.example.json` | `git` (optional deploy labels) |
 | `~/.claude/platform-engineer.json` | none; optional, never created by the skill | `platform-engineer` (self-augmentation flag, default off) |
 | `~/.claude/platform-engineer-augment-ledger.jsonl` | none; written by the skill only when that flag is on | `platform-engineer` (self-augmentation ledger) |
 
@@ -161,7 +172,7 @@ Command-line tools the skills run (all must already be on your `PATH` and
 authenticated; the plugins ship no binaries):
 
 - `gh` (GitHub CLI): `git`, `pr-review`, `pr-check`, `pr-babysit`, `plan-issue`, `doc`, `rca`, `on-call-report`.
-- `curl` and `python3`: `loki` (the bundled `parse_logs.py` summarises query results); `rca` (Sentry alert-rule check); `git` (Linear GraphQL, only when `LINEAR_API_KEY` is set).
+- `curl` and `python3`: `loki` (the bundled `parse_logs.py` summarises query results and computes the query window); `on-call-report` (the bundled `dates.py` does the date arithmetic); `rca` (Sentry alert-rule check); `git` (Linear GraphQL, only when `LINEAR_API_KEY` is set).
 - `gcloud`, authenticated against `GCP_PROJECT`: `rca` log queries.
 - `pytest`: `test-fix`. The repo's own formatter (pre-commit, black, ruff, gofmt, prettier, cargo fmt): `git`.
 
@@ -172,7 +183,7 @@ missing.
 - `on-call-report`: `slack` (read channels, threads and search; sending a message is never pre-approved and only happens after you confirm the prompt), `sentry`, `posthog`.
 - `rca`: `sentry`, `posthog`, `vercel`, `firebase` (each step is skipped and noted in the RCA document when its server is absent).
 - `pr-review`: `sentry`, only when `SENTRY_ORG` is set (the cross-reference phase is skipped otherwise).
-- `evaluate`: `sentry`, `posthog`, `vercel`, all optional, plus Claude Code's built-in `WebSearch` / `WebFetch`.
+- `evaluate`: `sentry`, `posthog`, `vercel`, all optional, plus Claude Code's built-in `WebSearch` (pre-approved) and `WebFetch` (prompts per URL).
 - Every other skill and both agents use no MCP server.
 
 ## Plugins
@@ -226,29 +237,57 @@ optional self-augmentation flag. See
 What you are installing, and how to check it yourself:
 
 - **No hooks, no MCP servers, no binaries.** The plugins are Markdown
-  instructions, one stdlib-only Python script (`plugins/oncall/skills/loki/parse_logs.py`,
-  which parses a Loki JSON response from stdin) and JSON/Markdown templates.
+  instructions, two stdlib-only Python scripts
+  (`plugins/oncall/skills/loki/parse_logs.py`, which parses a Loki JSON
+  response from stdin and prints a query time window, and
+  `plugins/oncall/skills/on-call-report/dates.py`, which prints a date N days
+  ago) and JSON/Markdown templates.
   `claude --plugin-dir ./plugins/<plugin> plugin details <plugin>` prints the
   component inventory (hooks, MCP servers and LSP servers are all 0) and the
   token cost without starting a session; CI runs `claude plugin validate --strict`
   and a headless clean install on every change.
 - **Which skills read untrusted text.** `loki` (log lines), `on-call-report`
   (Slack messages, Sentry, GitHub, PostHog), `rca` (logs, events, issues,
-  deployments), `pr-review` and `pr-babysit` (PR bodies, review comments, CI
-  logs), `evaluate` (web pages). Each of them carries a standing instruction
-  that fetched content is data, never an instruction: it is quoted and
-  classified, never executed, and cannot change which project, channel or
-  repository the skill works on.
+  deployments), `pr-review`, `pr-babysit` and `pr-check` (PR bodies, review
+  comments, CI logs), `git` (an existing PR body and its review threads),
+  `evaluate` (web pages). Each carries the same standing rule: fetched text
+  is evidence, not instructions. A claim is verified against the code or data
+  and acted on only within the task's scope when it holds, so evidence may
+  change a verdict or a recommendation; nothing in fetched text can make a
+  skill run a command, change a remote, repository or target, merge, push
+  elsewhere, reveal a secret or widen its scope.
 - **What is pre-approved.** `allowed-tools` grants last for one skill
-  invocation and are scoped: `loki` may run `curl`, `python3` and `date`;
-  `on-call-report` may run `gh`, `python3`, `cat`, `date` and the read-only
-  Slack, Sentry and PostHog tools; `evaluate` may read files and search the
-  web. `git` pre-approves `git`, `gh` and the formatters because committing,
-  pushing and opening the PR is its job; it never pushes to the default
-  branch and you invoke it deliberately. `pr-babysit`, `rca` and
-  `platform-engineer` pre-approve nothing, so every push, merge, label or
-  Slack post they cause goes through Claude Code's normal permission prompt.
-  No skill pre-approves a tool that sends messages.
+  invocation. The complete list, copied from the frontmatter (everything
+  else prompts):
+  - `loki`: `Bash(curl *)`, `Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/loki/parse_logs.py *)`
+    (the bundled parser and nothing else), `Read`.
+  - `on-call-report`: `Bash(gh issue list *)`, `Bash(gh search prs *)`,
+    `Bash(gh run list *)`, `Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/on-call-report/dates.py *)`,
+    `Bash(cat *)`, `Bash(date *)`, `Read`, `Grep`, `Glob`, and the Slack
+    read/search, Sentry read and PostHog read MCP tools; the Slack send tool
+    is not granted.
+  - `pr-check`: `Bash(gh pr view *)`, `Bash(gh pr checks *)`,
+    `Bash(gh run view *)`, `Bash(gh api repos/*/pulls/*/comments)`.
+  - `evaluate`: `Read`, `Grep`, `Glob`, `WebSearch`, `AskUserQuestion` and
+    the optional Sentry, PostHog and Vercel reads. `WebFetch` is not granted,
+    so every page fetch prompts with its URL.
+  - `git`: `Bash(git *)`, `Bash(gh *)`, the formatters (`black`, `ruff`,
+    `gofmt`, `goimports`, `npx prettier`, `cargo fmt`, `pre-commit`),
+    `Bash(test *)`, `Bash(date *)`,
+    `Bash(curl * https://api.linear.app/graphql*)`, `Read`, `Write`. This is
+    a write grant: `git push`, `gh pr create` / `gh pr edit`,
+    `gh label create` and the review-thread replies run without a prompt,
+    because shipping the branch is the skill's job. It never pushes to the
+    default branch.
+  - `rca`, `pr-babysit`, `platform-engineer` and every other skill and both
+    agents: nothing of their own. When `pr-babysit` or `platform-engineer`
+    dispatches `/git`, that push and those labels are pre-approved by
+    `git`'s grant; a merge (`gh pr merge`), an issue comment from `rca` and a
+    Slack post still prompt.
+
+  A `gh` grant can write wherever `gh` can: `git`'s `Bash(gh *)` is
+  unrestricted, while `on-call-report`'s and `pr-check`'s name read verbs
+  only. No skill pre-approves a tool that sends chat messages.
 - **Nothing phones home.** The skills call only the services you configure
   (your Loki, Sentry, PostHog, GitHub, Slack, Linear, Vercel, Google Cloud);
   there is no telemetry and no default endpoint. The optional one-line

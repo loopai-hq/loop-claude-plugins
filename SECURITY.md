@@ -57,6 +57,6 @@ fixes; there are no maintenance branches. Update with
 | `engg` | 0.2.x |
 | `platform-engineer` | 0.2.x |
 
-These plugins are tested with Claude Code 2.1.285. They are not affiliated
+These plugins are validated and installed with Claude Code 2.1.285 in CI. They are not affiliated
 with or endorsed by Anthropic; vulnerabilities in Claude Code itself go to
 Anthropic, not here.
